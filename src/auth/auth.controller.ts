@@ -1,11 +1,13 @@
 import { Controller, Post, Body, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { AuthService, LoginDto, RegisterDto, AuthResponse } from './auth.service';
+import { SkipAuth } from './skip-auth.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @SkipAuth()
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
     try {
       return await this.authService.register(registerDto);
@@ -18,6 +20,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @SkipAuth()
   async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     try {
       return await this.authService.login(loginDto);
