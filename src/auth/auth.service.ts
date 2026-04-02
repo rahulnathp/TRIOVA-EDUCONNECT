@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { User } from '../user/user.entity';
+import { User, UserRole } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
 export interface LoginDto {
@@ -13,6 +13,7 @@ export interface RegisterDto {
   password: string;
   firstName: string;
   lastName: string;
+  role?: UserRole;
 }
 
 export interface AuthResponse {
