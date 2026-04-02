@@ -5,6 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { CourseModule } from './course/course.module';
+import { MigrationModule } from './migration/migration.module';
+import { ApplicationModule } from './application/application.module';
+import { UniversityModule } from './university/university.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -30,6 +34,10 @@ import { databaseConfig } from './config/database.config';
     }),
     UserModule,
     AuthModule,
+    CourseModule,
+    MigrationModule,
+    ApplicationModule,
+    UniversityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

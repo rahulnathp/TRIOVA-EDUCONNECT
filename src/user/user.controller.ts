@@ -27,6 +27,13 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @Get('non-admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findAllNonAdminUsers(): Promise<User[]> {
+    return await this.userService.findAllNonAdminUsers();
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findById(@Param('id') id: string): Promise<User> {
