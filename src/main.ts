@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // Enable CORS
 app.enableCors({
-  origin: 'https://www.triovaeduconnect.com', // must be explicit when using credentials
+  origin: '*', // must be explicit when using credentials
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
