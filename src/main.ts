@@ -8,11 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS
-  app.enableCors({
-    origin: '*', // allow all (for testing)
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+app.enableCors({
+  origin: 'https://www.triovaeduconnect.com', // must be explicit when using credentials
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+});
 
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
