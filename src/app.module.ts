@@ -9,6 +9,7 @@ import { CourseModule } from './course/course.module';
 import { MigrationModule } from './migration/migration.module';
 import { ApplicationModule } from './application/application.module';
 import { UniversityModule } from './university/university.module';
+import { MediaModule } from './media/media.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -24,6 +25,7 @@ import { databaseConfig } from './config/database.config';
     MigrationModule,
     ApplicationModule,
     UniversityModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

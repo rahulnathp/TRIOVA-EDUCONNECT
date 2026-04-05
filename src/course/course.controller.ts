@@ -7,6 +7,7 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { UserRole } from '../user/user.entity';
 import { AddCourseDto } from './dto/add-course.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('courses')
 export class CourseController {
@@ -36,8 +37,14 @@ export class CourseController {
 
   @Get()
   @SkipAuth()
-  async findAll(): Promise<Course[]> {
-    return await this.courseService.findAll();
+  async findAll(@Query() pagination: PaginationDto) {
+    return await this.courseService.findAll(pagination);
+  }
+
+  @Get('all')
+  @SkipAuth()
+  async findAllWithoutPagination(): Promise<Course[]> {
+    return await this.courseService.findAllWithoutPagination();
   }
 
   @Get('search')

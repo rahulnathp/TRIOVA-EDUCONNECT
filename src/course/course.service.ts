@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './course.entity';
+import { PaginationDto, PaginatedResult } from './dto/pagination.dto';
 
 @Injectable()
 export class CourseService {
@@ -15,7 +16,45 @@ export class CourseService {
     return await this.courseRepository.save(course);
   }
 
-  async findAll(): Promise<Course[]> {
+  async findAll(pagination?: PaginationDto): Promise<PaginatedResult<Course>> {
+    const page = pagination?.page || 1;
+    const limit = pagination?.limit || 9;
+    const sortBy = pagination?.sortBy || 'createdAt';
+    const sortOrder = pagination?.sortOrder || 'DESC';
+
+    const skip = (page - 1) * limit;
+
+    // Build query
+    const queryBuilder = this.courseRepository
+      .createQueryBuilder('course')
+      .where('course.isActive = :isActive', { isActive: true })
+      .orderBy(`course.${sortBy}`, sortOrder);
+
+    // Get total count
+    const total = await queryBuilder.getCount();
+
+    // Get paginated results
+    const courses = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getMany();
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: courses,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  async findAllWithoutPagination(): Promise<Course[]> {
     return await this.courseRepository.find({
       where: { isActive: true },
     });
@@ -100,7 +139,7 @@ export class CourseService {
   }
 
   async getCourseStats(): Promise<any> {
-    const courses = await this.findAll();
+    const courses = await this.findAllWithoutPagination();
     const countries = [...new Set(courses.map(course => course.country))];
     const colleges = [...new Set(courses.map(course => course.collegeName))];
     
