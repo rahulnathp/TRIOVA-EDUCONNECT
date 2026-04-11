@@ -94,7 +94,7 @@ export class S3Service {
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: key,
-      Expires: 86400, // URL expires in 24 hours for frontend use
+      Expires: 3600, // URL expires in 1 hour (3600 seconds) - matches signed URL validity
     };
 
     try {

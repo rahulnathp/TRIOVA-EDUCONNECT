@@ -209,10 +209,23 @@ export class MediaService {
     const cacheKey = 'banners:current';
     
     // Try to get from cache first
-    const cachedCurrentBanner = this.cacheService.get<{ banner: Banner | null; nextRotation?: Date }>(cacheKey);
-    if (cachedCurrentBanner) {
-      console.log('📦 Serving current banner from cache');
-      return cachedCurrentBanner;
+    const cachedCurrentBanner = this.cacheService.get<{ banner: Banner | null; nextRotation?: Date; timestamp: number }>(cacheKey);
+    
+    // Check if cache exists and is less than 1 hour old
+    if (cachedCurrentBanner && cachedCurrentBanner.timestamp) {
+      const cacheAge = Date.now() - cachedCurrentBanner.timestamp;
+      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      
+      if (cacheAge < oneHour) {
+        console.log(`📦 Serving current banner from cache (${Math.round(cacheAge / (60 * 1000))} minutes old)`);
+        return {
+          banner: cachedCurrentBanner.banner,
+          nextRotation: cachedCurrentBanner.nextRotation,
+        };
+      } else {
+        console.log('⏰ Current banner cache expired (> 1 hour)');
+        this.cacheService.invalidate(cacheKey);
+      }
     }
     
     const activeBanner = await this.getActiveBanner();
@@ -226,11 +239,12 @@ export class MediaService {
     const result = {
       banner: activeBanner,
       nextRotation: nextRotation,
+      timestamp: Date.now(), // Add timestamp for age tracking
     };
     
-    // Cache for 50 minutes
-    this.cacheService.set(cacheKey, result, 50);
-    console.log('🔄 Fetched current banner from database and cached');
+    // Cache for 1 hour maximum
+    this.cacheService.set(cacheKey, result, 60);
+    console.log('🔄 Fetched current banner from database and cached (1 hour max)');
 
     return result;
   }
