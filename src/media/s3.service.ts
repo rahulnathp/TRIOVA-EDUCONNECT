@@ -75,14 +75,18 @@ export class S3Service {
 
   async getFileUrl(key: string): Promise<string> {
     // Use signed URL for secure access
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + (60 * 60 * 1000)); // 1 hour from now
+    
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: key,
-      Expires: 3600, // URL expires in 1 hour
+      Expires: Math.floor(expiresAt.getTime() / 1000), // Convert to seconds
     };
 
     try {
       const result = await this.s3.getSignedUrlPromise('getObject', params);
+      console.log(`🔗 Generated signed URL for ${key} (expires at ${expiresAt.toISOString()})`);
       return result;
     } catch (error) {
       throw new Error(`Failed to generate signed URL: ${error.message}`);
@@ -91,14 +95,19 @@ export class S3Service {
 
   // Method to generate long-lived signed URL (for frontend display)
   async getPublicUrl(key: string): Promise<string> {
+    // Use future timestamp to ensure 1-hour validity
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + (60 * 60 * 1000)); // 1 hour from now
+    
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: key,
-      Expires: 3600, // URL expires in 1 hour (3600 seconds) - matches signed URL validity
+      Expires: Math.floor(expiresAt.getTime() / 1000), // Convert to seconds
     };
 
     try {
       const result = await this.s3.getSignedUrlPromise('getObject', params);
+      console.log(`🔗 Generated public URL for ${key} (expires at ${expiresAt.toISOString()})`);
       return result;
     } catch (error) {
       throw new Error(`Failed to generate public URL: ${error.message}`);
